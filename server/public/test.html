@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<body>
+  <h3>Socket test</h3>
+  <input id="token" placeholder="JWT token" size="60">
+  <button id="connect">Connect</button>
+  <br><br>
+  <input id="to" placeholder="receiver user id" size="30">
+  <input id="text" placeholder="message">
+  <button id="send">Send</button>
+  <pre id="log"></pre>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket;
+    const $ = (id) => document.getElementById(id);
+    const log = (...a) => {
+      $("log").textContent +=
+        a.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(" ") + "\n";
+    };
+
+    $("connect").onclick = () => {
+      socket = io({ auth: { token: $("token").value.trim() } });
+      socket.on("connect", () => log("connected", socket.id));
+      socket.on("connect_error", (e) => log("connect_error:", e.message));
+      socket.on("onlineUsers", (u) => log("onlineUsers", u));
+      socket.on("userOnline", (id) => log("userOnline", id));
+      socket.on("userOffline", (id) => log("userOffline", id));
+      socket.on("newMessage", (m) => log("newMessage", m));
+      socket.on("typing", (d) => log("typing", d));
+    };
+
+    $("send").onclick = () => {
+      socket.emit("sendMessage", { to: $("to").value.trim(), text: $("text").value }, (res) =>
+        log("ack", res)
+      );
+    };
+  </script>
+</body>
+</html>
