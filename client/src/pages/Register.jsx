@@ -19,7 +19,14 @@ export default function Register() {
       await register(username, email, password);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Server se connect nahi ho paya");
+      console.error("Register error:", err);
+      if (err.response) {
+        setError(err.response.data?.message || `Server error (${err.response.status})`);
+      } else if (err.request) {
+        setError("Server se connect nahi ho paya (network ya CORS)");
+      } else {
+        setError("Client error: " + err.message);
+      }
     } finally {
       setBusy(false);
     }

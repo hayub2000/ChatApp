@@ -22,10 +22,10 @@ export function AuthProvider ({ children }) {
 
     },[])
 
-    const saveSession = (data) =>{
-        localStorage.setItem("token", data.token)
-        setUser(res.data)
-    }
+    const saveSession = (data) => {
+        localStorage.setItem("token", data.token);
+        setUser(data.user);
+    };
 
     const login = async (email,password) =>{
         const res = await api.post("/auth/login",{email,password})
