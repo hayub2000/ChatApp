@@ -6,8 +6,9 @@ const SocketContext = createContext(null);
 export const useSocket = () => useContext(SocketContext);
 
 export function SocketProvider({ children }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [socket, setSocket] = useState(null);
+  const [connected, setConnected] = useState(true);
   const [onlineUsers, setOnlineUsers] = useState(new Set());
   const userId = user?.id;
 
@@ -17,7 +18,7 @@ export function SocketProvider({ children }) {
     const s = io("http://localhost:5000", {
       auth: { token: localStorage.getItem("token") },
     });
-    
+
     s.on("onlineUsers", (ids) => setOnlineUsers(new Set(ids)));
     s.on("userOnline", (id) => setOnlineUsers((prev) => new Set(prev).add(id)));
     s.on("userOffline", (id) =>
@@ -27,6 +28,14 @@ export function SocketProvider({ children }) {
         return next;
       })
     );
+
+    s.on("connect", () => setConnected(true));
+    s.on("disconnect", () => setConnected(false));
+    s.on("connect_error", (err) => {
+      setConnected(false);
+      // Token galat ya expire ho to logout
+      if (err.message === "Invalid token" || err.message === "No token") logout();
+    });
 
     setSocket(s);
 
@@ -39,7 +48,7 @@ export function SocketProvider({ children }) {
   }, [userId]);
 
   return (
-    <SocketContext.Provider value={{ socket, onlineUsers }}>
+    <SocketContext.Provider value={{ socket, onlineUsers, connected }}>
       {children}
     </SocketContext.Provider>
   );

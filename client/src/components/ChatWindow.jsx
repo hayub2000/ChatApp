@@ -3,7 +3,7 @@ import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 
-export default function ChatWindow({ other, online }) {
+export default function ChatWindow({ other, online, onSent, onBack }) {
   const { user } = useAuth();
   const { socket } = useSocket();
   const [messages, setMessages] = useState([]);
@@ -101,12 +101,14 @@ export default function ChatWindow({ other, online }) {
 
   return (
     <div className="chat-main">
+      
       <div className="chat-head">
-      <div>
-        <strong>{other.username}</strong>
+        <button type="button" className="back-btn" onClick={onBack}>←</button>
+        <div>
+          <strong>{other.username}</strong>
           <div className="status">{typing ? "typing..." : online ? "online" : "offline"}</div>
+        </div>
       </div>
-    </div>
 
       <div className="messages">
         {messages.map((m) => (

@@ -7,7 +7,7 @@ import ChatWindow from "../components/ChatWindow";
 
 export default function Chat() {
   const { user } = useAuth();
-  const { socket, onlineUsers } = useSocket();
+  const { socket, onlineUsers, connected } = useSocket();
   const [conversations, setConversations] = useState([]);
   const [found, setFound] = useState([]);
   const [search, setSearch] = useState("");
@@ -105,7 +105,8 @@ export default function Chat() {
   const items = [...chatItems, ...otherItems];
 
   return (
-    <div className="chat-layout">
+    <div className={`chat-layout ${selected ? "has-chat" : ""}`}>
+      {!connected && <div className="banner">Connection lost, trying to reconnect...</div>}
       <Sidebar
         items={items}
         search={search}
@@ -114,7 +115,12 @@ export default function Chat() {
         onSelect={handleSelect}
       />
       {selected ? (
-        <ChatWindow key={selected._id} other={selected} online={onlineUsers.has(selected._id)} />
+        <ChatWindow
+          key={selected._id}
+          other={selected}
+          online={onlineUsers.has(selected._id)}
+          onBack={() => setSelected(null)}
+        />
       ) : (
         <div className="chat-main empty">
           <p>Chat shuru karne ke liye left se kisi user ko chuno</p>
