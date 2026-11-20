@@ -17,7 +17,7 @@ export function SocketProvider({ children }) {
     const s = io("http://localhost:5000", {
       auth: { token: localStorage.getItem("token") },
     });
-
+    
     s.on("onlineUsers", (ids) => setOnlineUsers(new Set(ids)));
     s.on("userOnline", (id) => setOnlineUsers((prev) => new Set(prev).add(id)));
     s.on("userOffline", (id) =>

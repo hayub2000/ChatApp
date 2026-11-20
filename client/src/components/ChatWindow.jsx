@@ -41,7 +41,9 @@ export default function ChatWindow({ other, online }) {
         if (m.sender === other._id) setTyping(false);
       }
     };
-    const onTyping = ({ from }) => from === other._id && setTyping(true);
+    const onTyping = ({ from }) =>  {
+      if (from === other._id) setTyping(true);
+    };
     const onStopTyping = ({ from }) => from === other._id && setTyping(false);
 
     socket.on("newMessage", onNew);
@@ -100,9 +102,11 @@ export default function ChatWindow({ other, online }) {
   return (
     <div className="chat-main">
       <div className="chat-head">
+      <div>
         <strong>{other.username}</strong>
-        <span className="status">{typing ? "typing..." : online ? "online" : "offline"}</span>
+          <div className="status">{typing ? "typing..." : online ? "online" : "offline"}</div>
       </div>
+    </div>
 
       <div className="messages">
         {messages.map((m) => (

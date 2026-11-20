@@ -14,10 +14,10 @@ router.get("/:userId",auth, async (req,res)=>{
             return res.status(400).json({message:"Invalid user id"})
         }
 
-        const messages = Message.find({
+        const messages = await Message.find({
             $or:[
                 {sender: req.userId, receiver: other},
-                {sender:other, receiver: reqq.userId}
+                {sender:other, receiver: req.userId}
             ],
         }).sort({createdAt: -1}).limit(100)
         
