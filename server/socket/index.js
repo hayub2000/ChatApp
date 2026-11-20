@@ -49,8 +49,7 @@ export default function registerSocket(io) {
         // sender hamesha token se, client ke bheje hue data se nahi
         const message = await Message.create({ sender: userId, receiver: to, text });
 
-        io.to(to).emit("newMessage", message);         // receiver ke saare tabs
-        socket.to(userId).emit("newMessage", message); // sender ke doosre tabs
+        io.to(to).to(userId).emit("newMessage", message); // dono ke saare tabs
         reply({ ok: true, message });                  // sender ke apne tab ko ack
       } catch (err) {
         console.error(err);

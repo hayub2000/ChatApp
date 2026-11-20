@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import messageRoutes from "./routes/messages.js";
 import registerSocket from "./socket/index.js";
+import conversationRoutes from "./routes/conversations.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_ORIGIN = "http://localhost:5173"; // Vite ka default port
@@ -23,6 +24,7 @@ app.get("/", (req, res) => res.send("Chat API is running"));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: CLIENT_ORIGIN } });

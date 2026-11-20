@@ -1,7 +1,16 @@
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 
-export default function Sidebar({ users, search, setSearch, selected, onSelect, unread }) {
+function formatStamp(d) {
+  const date = new Date(d);
+  const now = new Date();
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  return date.toLocaleDateString([], { day: "numeric", month: "short" });
+}
+
+export default function Sidebar({ items, search, setSearch, selected, onSelect }) {
   const { user, logout } = useAuth();
   const { onlineUsers } = useSocket();
 
@@ -20,16 +29,27 @@ export default function Sidebar({ users, search, setSearch, selected, onSelect, 
       />
 
       <div className="user-list">
-        {users.length === 0 && <p className="muted">Koi user nahi mila</p>}
-        {users.map((u) => (
+        {items.length === 0 && <p className="muted">Koi user nahi mila</p>}
+        {items.map(({ user: u, lastMessage, unread }) => (
           <div
             key={u._id}
             className={`user-item ${selected?._id === u._id ? "active" : ""}`}
             onClick={() => onSelect(u)}
           >
             <span className={`dot ${onlineUsers.has(u._id) ? "online" : ""}`} />
-            <span className="user-name">{u.username}</span>
-            {unread[u._id] > 0 && <span className="badge">{unread[u._id]}</span>}
+            <div className="user-info">
+              <span className="user-name">{u.username}</span>
+              {lastMessage && (
+                <span className="preview">
+                  {lastMessage.sender === user.id ? "You: " : ""}
+                  {lastMessage.text}
+                </span>
+              )}
+            </div>
+            <div className="meta">
+              {lastMessage && <small>{formatStamp(lastMessage.createdAt)}</small>}
+              {unread > 0 && <span className="badge">{unread}</span>}
+            </div>
           </div>
         ))}
       </div>
